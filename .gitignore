@@ -50,3 +50,8 @@ playwright-report/
 # Environment
 .env
 .env.local
+
+# Virtual environments
+.venv/
+venv/
+env/
