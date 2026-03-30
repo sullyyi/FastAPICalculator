@@ -1,0 +1,57 @@
+name: FastAPI Calculator CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install Playwright browsers
+      run: |
+        playwright install
+
+    - name: Run unit tests
+      run: |
+        pytest test_operations.py -v
+
+    - name: Run integration tests
+      run: |
+        pytest test_main.py -v
+
+    - name: Start FastAPI server for E2E tests
+      run: |
+        uvicorn main:app --host 0.0.0.0 --port 8000 &
+        sleep 3  # Wait for server to start
+
+    - name: Run end-to-end tests
+      run: |
+        pytest test_e2e.py -v
+
+    - name: Generate test report
+      if: always()
+      run: |
+        pytest --tb=short -v --junit-xml=test-results.xml || true
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: test-results.xml
