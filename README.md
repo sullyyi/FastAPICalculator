@@ -2,33 +2,43 @@
 
 A modern, fully-tested FastAPI web application that provides a user-friendly calculator with REST API endpoints and comprehensive test coverage.
 
+---
+
 ## Features
 
 - **REST API Endpoints** for arithmetic operations (add, subtract, multiply, divide, power)
 - **Interactive Web UI** with modern, responsive design
-- **Comprehensive Testing**:
+- **Comprehensive Testing**
   - Unit tests for all operations
   - Integration tests for all API endpoints
   - End-to-end tests using Playwright
 - **Logging** throughout the application for operations tracking and error reporting
 - **GitHub Actions CI/CD** for automated testing on every push
+- **Dockerized PostgreSQL Database** with pgAdmin management interface
 - **Professional Code Quality** with proper error handling and validation
+
+---
 
 ## Project Structure
 
+
 ```
 fastapi-calculator/
-├── main.py                 # FastAPI application with endpoints
-├── operations.py           # Core arithmetic operations
-├── test_operations.py      # Unit tests for operations
-├── test_main.py           # Integration tests for API endpoints
-├── test_e2e.py            # End-to-end tests with Playwright
-├── requirements.txt       # Python dependencies
-├── pytest.ini            # Pytest configuration
+├── main.py
+├── operations.py
+├── test_operations.py
+├── test_main.py
+├── test_e2e.py
+├── requirements.txt
+├── pytest.ini
+├── docker-compose.yml
+├── Dockerfile
+├── sql/
+│ └── assignment_queries.sql
 ├── .github/
-│   └── workflows/
-│       └── ci.yml        # GitHub Actions CI/CD workflow
-└── README.md             # This file
+│ └── workflows/
+│ └── ci.yml
+└── README.md
 ```
 
 ## Installation
@@ -36,6 +46,7 @@ fastapi-calculator/
 ### Prerequisites
 - Python 3.11 or higher
 - pip package manager
+- Docker Desktop
 
 ### Setup
 
@@ -76,6 +87,24 @@ The application will be available at `http://localhost:8000`
 ```bash
 python main.py
 ```
+## Running with Docker (PostgreSQL + pgAdmin)
+```bash
+docker compose up --build
+
+pgAdmin Login:
+email: admin@example.com
+password: admin
+
+PostGreSQL Connection Settings
+| Setting  | Value      |
+| -------- | ---------- |
+| Host     | db         |
+| Port     | 5432       |
+| Database | fastapi_db |
+| Username | postgres   |
+| Password | postgres   |
+
+
 
 ## Testing
 
@@ -254,12 +283,6 @@ The project follows Python best practices:
 ## License
 
 This project is part of the NJIT IS601004 course on Python for Web API Development.
-
-## Learning Outcomes
-
-This project addresses the following course learning outcomes:
-- **CLO7**: Apply professional terminology and concepts related to web systems development
-- **CLO10**: Create, Consume and Test REST APIs using Python
 
 ## References
 
