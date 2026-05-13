@@ -57,7 +57,7 @@ fastapi-calculator/
 
 1. **Clone the repository**
 ```bash
-git clone <repository-url>
+git clone https://github.com/sullyyi/FastAPICalculator.git
 cd fastapi-calculator
 ```
 
@@ -328,6 +328,26 @@ The project follows Python best practices:
 
 ### Port Already in Use
 - Change the port in `main.py` or use: `lsof -i :8000` to find and kill the process
+
+## Deployment & Repositories
+
+### GitHub Repository
+- **Source Code:** https://github.com/sullyyi/FastAPICalculator
+- **Report Issues:** https://github.com/sullyyi/FastAPICalculator/issues
+- **Pull Requests:** https://github.com/sullyyi/FastAPICalculator/pulls
+- **CI/CD Status:** https://github.com/sullyyi/FastAPICalculator/actions
+
+### Docker Hub Repository
+- **Docker Image:** https://hub.docker.com/r/sullyyi/fastapi-calculator
+- **Pull Command:** `docker pull sullyyi/fastapi-calculator:latest`
+- **Run Command:** `docker run -p 8000:8000 sullyyi/fastapi-calculator:latest`
+
+### Installation Options
+1. **From Source:** `git clone https://github.com/sullyyi/FastAPICalculator.git`
+2. **From Docker:** `docker pull sullyyi/fastapi-calculator:latest`
+3. **From Docker Compose:** Included in repository
+
+For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## License
 
