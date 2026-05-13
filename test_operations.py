@@ -189,13 +189,13 @@ class TestLogarithm:
     
     def test_logarithm_base_10(self):
         """Test logarithm with base 10"""
-        assert logarithm(100, 10) == 2
-        assert logarithm(1000, 10) == 3
+        assert logarithm(100, 10) == pytest.approx(2)
+        assert logarithm(1000, 10) == pytest.approx(3)
     
     def test_logarithm_base_2(self):
         """Test logarithm with base 2"""
-        assert logarithm(8, 2) == 3
-        assert logarithm(16, 2) == 4
+        assert logarithm(8, 2) == pytest.approx(3)
+        assert logarithm(16, 2) == pytest.approx(4)
     
     def test_logarithm_natural(self):
         """Test natural logarithm (base e)"""
@@ -209,9 +209,9 @@ class TestLogarithm:
     
     def test_logarithm_one_returns_zero(self):
         """Test that log of 1 is always 0"""
-        assert logarithm(1, 10) == 0
-        assert logarithm(1, 2) == 0
-        assert logarithm(1, 100) == 0
+        assert logarithm(1, 10) == pytest.approx(0)
+        assert logarithm(1, 2) == pytest.approx(0)
+        assert logarithm(1, 100) == pytest.approx(0)
     
     def test_logarithm_invalid_argument_zero(self):
         """Test logarithm with argument of 0 raises ValueError"""
