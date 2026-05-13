@@ -39,10 +39,10 @@ async def test_calculator_ui_elements_present():
         await page.goto("http://localhost:8000/", wait_until="domcontentloaded")
         
         # Check for input fields
-        num1_input = await page.locator("#num1")
-        num2_input = await page.locator("#num2")
-        operation_select = await page.locator("#operation")
-        calculate_button = await page.locator("button")
+        num1_input = page.locator("#num1")
+        num2_input = page.locator("#num2")
+        operation_select = page.locator("#operation")
+        calculate_button = page.locator("button")
         
         assert await num1_input.count() > 0
         assert await num2_input.count() > 0
