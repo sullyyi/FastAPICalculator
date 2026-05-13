@@ -6,12 +6,17 @@ A modern, fully-tested FastAPI web application that provides a user-friendly cal
 
 ## Features
 
-- **REST API Endpoints** for arithmetic operations (add, subtract, multiply, divide, power)
+- **REST API Endpoints** for 8 arithmetic operations:
+  - Basic: Add, Subtract, Multiply, Divide, Power
+  - Advanced: Logarithm, GCD (Greatest Common Divisor), LCM (Least Common Multiple)
 - **Interactive Web UI** with modern, responsive design
-- **Comprehensive Testing**
-  - Unit tests for all operations
+  - Dynamic operation-specific labels and help text
+  - Client-side validation for all operations
+  - Real-time feedback and error messages
+- **Comprehensive Testing** (93+ tests)
+  - Unit tests for all operations with edge cases
   - Integration tests for all API endpoints
-  - End-to-end tests using Playwright
+  - End-to-end tests using Playwright for UI workflows
 - **Logging** throughout the application for operations tracking and error reporting
 - **GitHub Actions CI/CD** for automated testing on every push
 - **Dockerized PostgreSQL Database** with pgAdmin management interface
@@ -173,6 +178,30 @@ pytest --cov=. --cov-report=html
 - Request: `{"a": 2, "b": 3}`
 - Response: `{"result": 8, "operation": "power"}`
 
+### Logarithm
+- **POST** `/calculate/logarithm`
+- Request: `{"a": 100, "b": 10}` (argument=100, base=10)
+- Response: `{"result": 2.0, "operation": "logarithm"}`
+- Constraints: `a > 0`, `b > 0`, `b ≠ 1`
+- Error (invalid argument): `{"detail": "Logarithm argument must be greater than 0"}`
+- Error (invalid base): `{"detail": "Logarithm base cannot be 1"}`
+
+### GCD (Greatest Common Divisor)
+- **POST** `/calculate/gcd`
+- Request: `{"a": 12, "b": 8}`
+- Response: `{"result": 4, "operation": "gcd"}`
+- Constraints: Both `a` and `b` must be positive integers
+- Error (non-integer): `{"detail": "GCD requires integer arguments"}`
+- Error (non-positive): `{"detail": "GCD requires positive integers"}`
+
+### LCM (Least Common Multiple)
+- **POST** `/calculate/lcm`
+- Request: `{"a": 12, "b": 8}`
+- Response: `{"result": 24, "operation": "lcm"}`
+- Constraints: Both `a` and `b` must be positive integers
+- Error (non-integer): `{"detail": "LCM requires integer arguments"}`
+- Error (non-positive): `{"detail": "LCM requires positive integers"}`
+
 ## Test Coverage
 
 ### Unit Tests (test_operations.py)
@@ -181,8 +210,11 @@ pytest --cov=. --cov-report=html
 - Multiplication: 6 tests
 - Division: 7 tests (including divide by zero)
 - Power: 7 tests
+- Logarithm: 10 tests (basic, invalid argument, invalid base, edge cases)
+- GCD: 8 tests (basic, coprime, invalid float, invalid negative)
+- LCM: 8 tests (basic, coprime, invalid float, invalid negative)
 - Edge cases: 3 tests
-- **Total: 33 unit tests**
+- **Total: 59 unit tests**
 
 ### Integration Tests (test_main.py)
 - Home endpoint: 3 tests
@@ -192,9 +224,12 @@ pytest --cov=. --cov-report=html
 - Multiplication endpoint: 3 tests
 - Division endpoint: 4 tests
 - Power endpoint: 4 tests
+- Logarithm endpoint: 4 tests (basic, invalid argument, invalid base)
+- GCD endpoint: 4 tests (basic, coprime, invalid float, invalid negative)
+- LCM endpoint: 4 tests (basic, coprime, invalid float, invalid negative)
 - Error handling: 3 tests
 - Response format: 2 tests
-- **Total: 27 integration tests**
+- **Total: 41 integration tests**
 
 ### End-to-End Tests (test_e2e.py)
 - Page load: 1 test
@@ -204,28 +239,42 @@ pytest --cov=. --cov-report=html
 - Multiply operation: 1 test
 - Divide operation: 1 test
 - Power operation: 1 test
+- Logarithm operation: 1 test
+- Logarithm invalid argument: 1 test
+- GCD operation: 1 test
+- GCD invalid float: 1 test
+- LCM operation: 1 test
+- LCM coprime numbers: 1 test
 - Divide by zero error: 1 test
 - Floating point: 1 test
 - Negative numbers: 1 test
+- Operation label updates: 1 test
 - Enter key: 1 test
-- **Total: 11 end-to-end tests**
+- **Total: 18 end-to-end tests**
 
-**Grand Total: 71 Tests**
+**Grand Total: 93 Tests**
+- 59 unit tests
+- 41 integration tests
+- 18 end-to-end tests
 
 ## Logging
 
 The application uses Python's standard `logging` module configured at the INFO level. Logs capture:
 - Application startup events
-- All calculation operations
+- All calculation operations (including logarithm, GCD, LCM)
 - API endpoint requests
 - Error conditions
 - Division by zero attempts
+- Invalid input attempts
 
 Example log output:
 ```
 2026-03-30 19:00:00,123 - main - INFO - FastAPI Calculator Application started
 2026-03-30 19:00:15,456 - operations - INFO - Addition: 5 + 3 = 8
 2026-03-30 19:00:20,789 - main - INFO - Addition calculated: 5 + 3 = 8
+2026-03-30 19:00:25,100 - operations - INFO - Logarithm: log_10(100) = 2.0
+2026-03-30 19:00:30,200 - operations - INFO - GCD: gcd(12, 8) = 4
+2026-03-30 19:00:35,300 - operations - INFO - LCM: lcm(12, 8) = 24
 ```
 
 ## GitHub Actions CI/CD
