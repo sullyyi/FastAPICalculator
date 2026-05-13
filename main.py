@@ -64,12 +64,25 @@ async def get_home():
                 border-radius: 10px;
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
                 width: 100%;
-                max-width: 400px;
+                max-width: 450px;
             }
             h1 {
                 text-align: center;
                 color: #333;
                 margin-bottom: 30px;
+            }
+            .info-box {
+                background-color: #e3f2fd;
+                border-left: 4px solid #667eea;
+                padding: 12px;
+                margin-bottom: 20px;
+                border-radius: 4px;
+                font-size: 13px;
+                color: #1976d2;
+                display: none;
+            }
+            .info-box.show {
+                display: block;
             }
             .input-group {
                 margin-bottom: 15px;
@@ -80,6 +93,12 @@ async def get_home():
                 color: #555;
                 font-weight: bold;
             }
+            .label-help {
+                font-size: 12px;
+                color: #999;
+                font-weight: normal;
+                margin-left: 5px;
+            }
             input {
                 width: 100%;
                 padding: 10px;
@@ -87,6 +106,12 @@ async def get_home():
                 border-radius: 5px;
                 font-size: 16px;
                 box-sizing: border-box;
+                transition: border-color 0.3s;
+            }
+            input:focus {
+                outline: none;
+                border-color: #667eea;
+                box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
             }
             select {
                 width: 100%;
@@ -95,6 +120,12 @@ async def get_home():
                 border-radius: 5px;
                 font-size: 16px;
                 box-sizing: border-box;
+                transition: border-color 0.3s;
+            }
+            select:focus {
+                outline: none;
+                border-color: #667eea;
+                box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
             }
             button {
                 width: 100%;
@@ -111,6 +142,9 @@ async def get_home():
             button:hover {
                 background-color: #764ba2;
             }
+            button:active {
+                transform: scale(0.98);
+            }
             .result {
                 margin-top: 20px;
                 padding: 15px;
@@ -118,6 +152,7 @@ async def get_home():
                 border-radius: 5px;
                 text-align: center;
                 display: none;
+                border-left: 4px solid #4caf50;
             }
             .result.show {
                 display: block;
@@ -129,6 +164,7 @@ async def get_home():
                 background-color: #ffebee;
                 border-radius: 5px;
                 display: none;
+                border-left: 4px solid #d32f2f;
             }
             .error.show {
                 display: block;
@@ -138,27 +174,35 @@ async def get_home():
     <body>
         <div class="container">
             <h1>🧮 FastAPI Calculator</h1>
+            
             <div class="input-group">
-                <label for="num1">First Number:</label>
-                <input type="number" id="num1" step="0.01" placeholder="Enter first number">
-            </div>
-            <div class="input-group">
-                <label for="operation">Operation:</label>
-                <select id="operation">
+                <label for="operation">Operation:
+                    <span class="label-help" id="helpText"></span>
+                </label>
+                <select id="operation" onchange="updateLabels()">
                     <option value="add">Add (+)</option>
                     <option value="subtract">Subtract (-)</option>
                     <option value="multiply">Multiply (*)</option>
                     <option value="divide">Divide (/)</option>
                     <option value="power">Power (^)</option>
                     <option value="logarithm">Logarithm (logₓ)</option>
-                    <option value="gcd">GCD</option>
-                    <option value="lcm">LCM</option>
+                    <option value="gcd">GCD - Greatest Common Divisor</option>
+                    <option value="lcm">LCM - Least Common Multiple</option>
                 </select>
             </div>
+
+            <div id="infoBox" class="info-box"></div>
+            
             <div class="input-group">
-                <label for="num2">Second Number:</label>
+                <label for="num1" id="label1">First Number:</label>
+                <input type="number" id="num1" step="0.01" placeholder="Enter first number">
+            </div>
+            
+            <div class="input-group">
+                <label for="num2" id="label2">Second Number:</label>
                 <input type="number" id="num2" step="0.01" placeholder="Enter second number">
             </div>
+            
             <button onclick="calculate()">Calculate</button>
             <div id="error" class="error"></div>
             <div id="result" class="result">
@@ -168,6 +212,87 @@ async def get_home():
         </div>
 
         <script>
+            // Operation information and validation
+            const operationInfo = {
+                'add': {
+                    label1: 'First Number:',
+                    label2: 'Second Number:',
+                    help: '',
+                    info: '',
+                    validate: () => true
+                },
+                'subtract': {
+                    label1: 'First Number (a):',
+                    label2: 'Second Number (b):',
+                    help: '',
+                    info: '',
+                    validate: () => true
+                },
+                'multiply': {
+                    label1: 'First Number:',
+                    label2: 'Second Number:',
+                    help: '',
+                    info: '',
+                    validate: () => true
+                },
+                'divide': {
+                    label1: 'Numerator:',
+                    label2: 'Denominator:',
+                    help: '(cannot be 0)',
+                    info: '',
+                    validate: (num2) => num2 !== 0 ? true : false
+                },
+                'power': {
+                    label1: 'Base:',
+                    label2: 'Exponent:',
+                    help: '',
+                    info: '',
+                    validate: () => true
+                },
+                'logarithm': {
+                    label1: 'Argument:',
+                    label2: 'Base:',
+                    help: '(both > 0, base ≠ 1)',
+                    info: 'ⓘ Logarithm requires positive argument and base (not equal to 1).',
+                    validate: (num1, num2) => num1 > 0 && num2 > 0 && num2 !== 1
+                },
+                'gcd': {
+                    label1: 'First Integer:',
+                    label2: 'Second Integer:',
+                    help: '(positive integers)',
+                    info: 'ⓘ GCD requires positive integers only.',
+                    validate: (num1, num2) => Number.isInteger(num1) && Number.isInteger(num2) && num1 > 0 && num2 > 0
+                },
+                'lcm': {
+                    label1: 'First Integer:',
+                    label2: 'Second Integer:',
+                    help: '(positive integers)',
+                    info: 'ⓘ LCM requires positive integers only.',
+                    validate: (num1, num2) => Number.isInteger(num1) && Number.isInteger(num2) && num1 > 0 && num2 > 0
+                }
+            };
+
+            function updateLabels() {
+                const operation = document.getElementById('operation').value;
+                const info = operationInfo[operation];
+                
+                document.getElementById('label1').textContent = info.label1;
+                document.getElementById('label2').textContent = info.label2;
+                document.getElementById('helpText').textContent = info.help;
+                
+                const infoBox = document.getElementById('infoBox');
+                if (info.info) {
+                    infoBox.textContent = info.info;
+                    infoBox.classList.add('show');
+                } else {
+                    infoBox.classList.remove('show');
+                }
+                
+                // Clear previous results
+                document.getElementById('error').classList.remove('show');
+                document.getElementById('result').classList.remove('show');
+            }
+
             async function calculate() {
                 const num1 = parseFloat(document.getElementById('num1').value);
                 const num2 = parseFloat(document.getElementById('num2').value);
@@ -175,12 +300,36 @@ async def get_home():
                 
                 const errorDiv = document.getElementById('error');
                 const resultDiv = document.getElementById('result');
+                const info = operationInfo[operation];
                 
                 errorDiv.classList.remove('show');
                 resultDiv.classList.remove('show');
                 
+                // Basic validation
                 if (isNaN(num1) || isNaN(num2)) {
-                    errorDiv.textContent = 'Please enter valid numbers';
+                    errorDiv.textContent = '⚠ Please enter valid numbers';
+                    errorDiv.classList.add('show');
+                    return;
+                }
+                
+                // Custom validation
+                if (!info.validate(num1, num2)) {
+                    let msg = 'Invalid input: ';
+                    switch(operation) {
+                        case 'divide':
+                            msg += 'Cannot divide by zero';
+                            break;
+                        case 'logarithm':
+                            msg += 'Argument must be > 0, base must be > 0 and ≠ 1';
+                            break;
+                        case 'gcd':
+                        case 'lcm':
+                            msg += 'Both values must be positive integers';
+                            break;
+                        default:
+                            msg += 'Invalid input for this operation';
+                    }
+                    errorDiv.textContent = '⚠ ' + msg;
                     errorDiv.classList.add('show');
                     return;
                 }
@@ -197,7 +346,7 @@ async def get_home():
                     const data = await response.json();
                     
                     if (!response.ok) {
-                        errorDiv.textContent = data.detail || 'Calculation failed';
+                        errorDiv.textContent = '⚠ ' + (data.detail || 'Calculation failed');
                         errorDiv.classList.add('show');
                         return;
                     }
@@ -205,7 +354,7 @@ async def get_home():
                     document.getElementById('resultValue').textContent = data.result;
                     resultDiv.classList.add('show');
                 } catch (error) {
-                    errorDiv.textContent = 'Error: ' + error.message;
+                    errorDiv.textContent = '⚠ Error: ' + error.message;
                     errorDiv.classList.add('show');
                 }
             }
@@ -214,6 +363,9 @@ async def get_home():
             document.getElementById('num2').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') calculate();
             });
+            
+            // Initialize labels on page load
+            updateLabels();
         </script>
     </body>
     </html>
