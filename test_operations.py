@@ -4,7 +4,7 @@ Tests all arithmetic operations for correctness and error handling.
 """
 
 import pytest
-from operations import add, subtract, multiply, divide, power
+from operations import add, subtract, multiply, divide, power, logarithm, gcd, lcm
 
 
 class TestAddition:
@@ -182,3 +182,146 @@ class TestEdgeCases:
         assert subtract(5, 2.5) == 2.5
         assert multiply(4, 2.5) == 10.0
         assert divide(5, 2) == 2.5
+
+
+class TestLogarithm:
+    """Test suite for logarithm operation"""
+    
+    def test_logarithm_base_10(self):
+        """Test logarithm with base 10"""
+        assert logarithm(100, 10) == 2
+        assert logarithm(1000, 10) == 3
+    
+    def test_logarithm_base_2(self):
+        """Test logarithm with base 2"""
+        assert logarithm(8, 2) == 3
+        assert logarithm(16, 2) == 4
+    
+    def test_logarithm_natural(self):
+        """Test natural logarithm (base e)"""
+        import math
+        assert logarithm(math.e, math.e) == pytest.approx(1)
+    
+    def test_logarithm_fractional_argument(self):
+        """Test logarithm with fractional argument"""
+        assert logarithm(0.5, 2) == pytest.approx(-1)
+        assert logarithm(0.1, 10) == pytest.approx(-1)
+    
+    def test_logarithm_one_returns_zero(self):
+        """Test that log of 1 is always 0"""
+        assert logarithm(1, 10) == 0
+        assert logarithm(1, 2) == 0
+        assert logarithm(1, 100) == 0
+    
+    def test_logarithm_invalid_argument_zero(self):
+        """Test logarithm with argument of 0 raises ValueError"""
+        with pytest.raises(ValueError, match="Logarithm argument must be greater than 0"):
+            logarithm(0, 10)
+    
+    def test_logarithm_invalid_argument_negative(self):
+        """Test logarithm with negative argument raises ValueError"""
+        with pytest.raises(ValueError, match="Logarithm argument must be greater than 0"):
+            logarithm(-5, 10)
+    
+    def test_logarithm_invalid_base_zero(self):
+        """Test logarithm with base of 0 raises ValueError"""
+        with pytest.raises(ValueError, match="Logarithm base must be greater than 0"):
+            logarithm(100, 0)
+    
+    def test_logarithm_invalid_base_negative(self):
+        """Test logarithm with negative base raises ValueError"""
+        with pytest.raises(ValueError, match="Logarithm base must be greater than 0"):
+            logarithm(100, -2)
+    
+    def test_logarithm_invalid_base_one(self):
+        """Test logarithm with base of 1 raises ValueError"""
+        with pytest.raises(ValueError, match="Logarithm base cannot be 1"):
+            logarithm(100, 1)
+
+
+class TestGCD:
+    """Test suite for GCD operation"""
+    
+    def test_gcd_basic(self):
+        """Test basic GCD calculations"""
+        assert gcd(12, 8) == 4
+        assert gcd(21, 14) == 7
+    
+    def test_gcd_coprime(self):
+        """Test GCD of coprime numbers (GCD = 1)"""
+        assert gcd(7, 11) == 1
+        assert gcd(13, 17) == 1
+    
+    def test_gcd_one_number_zero_times_another(self):
+        """Test GCD where one number is multiple of another"""
+        assert gcd(10, 5) == 5
+        assert gcd(20, 5) == 5
+    
+    def test_gcd_same_numbers(self):
+        """Test GCD of identical numbers"""
+        assert gcd(5, 5) == 5
+        assert gcd(100, 100) == 100
+    
+    def test_gcd_with_float_integers(self):
+        """Test GCD with float values that are integers"""
+        assert gcd(12.0, 8.0) == 4
+        assert gcd(20.0, 15.0) == 5
+    
+    def test_gcd_invalid_float(self):
+        """Test GCD with non-integer float raises ValueError"""
+        with pytest.raises(ValueError, match="GCD requires integer arguments"):
+            gcd(12.5, 8)
+    
+    def test_gcd_invalid_negative(self):
+        """Test GCD with negative numbers raises ValueError"""
+        with pytest.raises(ValueError, match="GCD requires positive integers"):
+            gcd(-12, 8)
+    
+    def test_gcd_invalid_zero(self):
+        """Test GCD with zero raises ValueError"""
+        with pytest.raises(ValueError, match="GCD requires positive integers"):
+            gcd(0, 8)
+
+
+class TestLCM:
+    """Test suite for LCM operation"""
+    
+    def test_lcm_basic(self):
+        """Test basic LCM calculations"""
+        assert lcm(12, 8) == 24
+        assert lcm(4, 6) == 12
+    
+    def test_lcm_coprime(self):
+        """Test LCM of coprime numbers"""
+        assert lcm(7, 11) == 77
+        assert lcm(3, 5) == 15
+    
+    def test_lcm_one_divides_other(self):
+        """Test LCM where one number divides the other"""
+        assert lcm(10, 5) == 10
+        assert lcm(20, 5) == 20
+    
+    def test_lcm_same_numbers(self):
+        """Test LCM of identical numbers"""
+        assert lcm(5, 5) == 5
+        assert lcm(100, 100) == 100
+    
+    def test_lcm_with_float_integers(self):
+        """Test LCM with float values that are integers"""
+        assert lcm(12.0, 8.0) == 24
+        assert lcm(4.0, 6.0) == 12
+    
+    def test_lcm_invalid_float(self):
+        """Test LCM with non-integer float raises ValueError"""
+        with pytest.raises(ValueError, match="LCM requires integer arguments"):
+            lcm(12.5, 8)
+    
+    def test_lcm_invalid_negative(self):
+        """Test LCM with negative numbers raises ValueError"""
+        with pytest.raises(ValueError, match="LCM requires positive integers"):
+            lcm(-12, 8)
+    
+    def test_lcm_invalid_zero(self):
+        """Test LCM with zero raises ValueError"""
+        with pytest.raises(ValueError, match="LCM requires positive integers"):
+            lcm(0, 8)

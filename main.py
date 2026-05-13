@@ -12,7 +12,7 @@ from typing import Union
 import os
 
 # Import operations
-from operations import add, subtract, multiply, divide, power
+from operations import add, subtract, multiply, divide, power, logarithm, gcd, lcm
 
 # Configure logging
 logging.basicConfig(
@@ -150,6 +150,9 @@ async def get_home():
                     <option value="multiply">Multiply (*)</option>
                     <option value="divide">Divide (/)</option>
                     <option value="power">Power (^)</option>
+                    <option value="logarithm">Logarithm (logₓ)</option>
+                    <option value="gcd">GCD</option>
+                    <option value="lcm">LCM</option>
                 </select>
             </div>
             <div class="input-group">
@@ -277,6 +280,51 @@ async def calculate_power(request: CalculationRequest):
         return CalculationResponse(result=result, operation="power")
     except Exception as e:
         logger.error(f"Error in power operation: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/calculate/logarithm", response_model=CalculationResponse)
+async def calculate_logarithm(request: CalculationRequest):
+    """Calculate logarithm: a is the argument, b is the base"""
+    try:
+        result = logarithm(request.a, request.b)
+        logger.info(f"Logarithm calculated: log_{request.b}({request.a}) = {result}")
+        return CalculationResponse(result=result, operation="logarithm")
+    except ValueError as e:
+        logger.error(f"Logarithm error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error in logarithm operation: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/calculate/gcd", response_model=CalculationResponse)
+async def calculate_gcd(request: CalculationRequest):
+    """Calculate greatest common divisor"""
+    try:
+        result = gcd(request.a, request.b)
+        logger.info(f"GCD calculated: gcd({request.a}, {request.b}) = {result}")
+        return CalculationResponse(result=result, operation="gcd")
+    except ValueError as e:
+        logger.error(f"GCD error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error in gcd operation: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/calculate/lcm", response_model=CalculationResponse)
+async def calculate_lcm(request: CalculationRequest):
+    """Calculate least common multiple"""
+    try:
+        result = lcm(request.a, request.b)
+        logger.info(f"LCM calculated: lcm({request.a}, {request.b}) = {result}")
+        return CalculationResponse(result=result, operation="lcm")
+    except ValueError as e:
+        logger.error(f"LCM error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error in lcm operation: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
 
 

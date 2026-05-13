@@ -291,3 +291,138 @@ class TestResponseFormat:
             json={"a": 5, "b": 3}
         )
         assert "application/json" in response.headers["content-type"]
+
+
+class TestLogarithmEndpoint:
+    """Test suite for logarithm endpoint"""
+    
+    def test_logarithm_base_10(self):
+        """Test logarithm with base 10"""
+        response = client.post(
+            "/calculate/logarithm",
+            json={"a": 100, "b": 10}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["result"] == 2
+        assert data["operation"] == "logarithm"
+    
+    def test_logarithm_base_2(self):
+        """Test logarithm with base 2"""
+        response = client.post(
+            "/calculate/logarithm",
+            json={"a": 8, "b": 2}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["result"] == 3
+    
+    def test_logarithm_invalid_argument_zero(self):
+        """Test logarithm with zero argument returns error"""
+        response = client.post(
+            "/calculate/logarithm",
+            json={"a": 0, "b": 10}
+        )
+        assert response.status_code == 400
+        data = response.json()
+        assert "Logarithm argument must be greater than 0" in data["detail"]
+    
+    def test_logarithm_invalid_base_one(self):
+        """Test logarithm with base 1 returns error"""
+        response = client.post(
+            "/calculate/logarithm",
+            json={"a": 100, "b": 1}
+        )
+        assert response.status_code == 400
+        data = response.json()
+        assert "Logarithm base cannot be 1" in data["detail"]
+
+
+class TestGCDEndpoint:
+    """Test suite for GCD endpoint"""
+    
+    def test_gcd_basic(self):
+        """Test basic GCD calculation"""
+        response = client.post(
+            "/calculate/gcd",
+            json={"a": 12, "b": 8}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["result"] == 4
+        assert data["operation"] == "gcd"
+    
+    def test_gcd_coprime_numbers(self):
+        """Test GCD of coprime numbers"""
+        response = client.post(
+            "/calculate/gcd",
+            json={"a": 7, "b": 11}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["result"] == 1
+    
+    def test_gcd_invalid_negative(self):
+        """Test GCD with negative number returns error"""
+        response = client.post(
+            "/calculate/gcd",
+            json={"a": -12, "b": 8}
+        )
+        assert response.status_code == 400
+        data = response.json()
+        assert "GCD requires positive integers" in data["detail"]
+    
+    def test_gcd_invalid_float(self):
+        """Test GCD with non-integer float returns error"""
+        response = client.post(
+            "/calculate/gcd",
+            json={"a": 12.5, "b": 8}
+        )
+        assert response.status_code == 400
+        data = response.json()
+        assert "GCD requires integer arguments" in data["detail"]
+
+
+class TestLCMEndpoint:
+    """Test suite for LCM endpoint"""
+    
+    def test_lcm_basic(self):
+        """Test basic LCM calculation"""
+        response = client.post(
+            "/calculate/lcm",
+            json={"a": 12, "b": 8}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["result"] == 24
+        assert data["operation"] == "lcm"
+    
+    def test_lcm_coprime_numbers(self):
+        """Test LCM of coprime numbers"""
+        response = client.post(
+            "/calculate/lcm",
+            json={"a": 7, "b": 11}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["result"] == 77
+    
+    def test_lcm_invalid_negative(self):
+        """Test LCM with negative number returns error"""
+        response = client.post(
+            "/calculate/lcm",
+            json={"a": -12, "b": 8}
+        )
+        assert response.status_code == 400
+        data = response.json()
+        assert "LCM requires positive integers" in data["detail"]
+    
+    def test_lcm_invalid_float(self):
+        """Test LCM with non-integer float returns error"""
+        response = client.post(
+            "/calculate/lcm",
+            json={"a": 12.5, "b": 8}
+        )
+        assert response.status_code == 400
+        data = response.json()
+        assert "LCM requires integer arguments" in data["detail"]
